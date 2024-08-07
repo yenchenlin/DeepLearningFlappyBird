@@ -1,6 +1,4 @@
-model_checkpoint_path: "bird-dqn-2920000"
-all_model_checkpoint_paths: "bird-dqn-2880000"
-all_model_checkpoint_paths: "bird-dqn-2890000"
-all_model_checkpoint_paths: "bird-dqn-2900000"
-all_model_checkpoint_paths: "bird-dqn-2910000"
-all_model_checkpoint_paths: "bird-dqn-2920000"
+model_checkpoint_path: "ckpt-1"
+all_model_checkpoint_paths: "ckpt-1"
+all_model_checkpoint_timestamps: 1721205841.8255534
+last_preserved_timestamp: 1721205413.3230736
