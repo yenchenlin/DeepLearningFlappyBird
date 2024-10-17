@@ -17,7 +17,7 @@ SCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
 pygame.display.set_caption('Flappy Bird')
 
 IMAGES, SOUNDS, HITMASKS = flappy_bird_utils.load()
-PIPEGAPSIZE = 100 # gap between upper and lower part of pipe
+PIPEGAPSIZE = 100 # 上下管道之间的间隙大小
 BASEY = SCREENHEIGHT * 0.79
 
 PLAYER_WIDTH = IMAGES['player'][0].get_width()
@@ -50,12 +50,12 @@ class GameState:
 
         # player velocity, max velocity, downward accleration, accleration on flap
         self.pipeVelX = -4
-        self.playerVelY    =  0    # player's velocity along Y, default same as playerFlapped
-        self.playerMaxVelY =  10   # max vel along Y, max descend speed
-        self.playerMinVelY =  -8   # min vel along Y, max ascend speed
-        self.playerAccY    =   1   # players downward accleration
-        self.playerFlapAcc =  -9   # players speed on flapping
-        self.playerFlapped = False # True when player flaps
+        self.playerVelY    =  0    # 玩家在Y轴上的速度，默认与playerFlapped相同
+        self.playerMaxVelY =  10   # Y轴上的最大速度，最大下降速度
+        self.playerMinVelY =  -8   # Y轴上的最小速度，最大上升速度
+        self.playerAccY    =   1   # 玩家向下的加速度
+        self.playerFlapAcc =  -9   # 玩家扇动时的速度
+        self.playerFlapped = False # 当玩家扇动时为True
 
     def frame_step(self, input_actions):
         pygame.event.pump()
@@ -66,15 +66,15 @@ class GameState:
         if sum(input_actions) != 1:
             raise ValueError('Multiple input actions!')
 
-        # input_actions[0] == 1: do nothing
-        # input_actions[1] == 1: flap the bird
+        # input_actions[0] == 1: 什么都不做
+        # input_actions[1] == 1: 扇动小鸟
         if input_actions[1] == 1:
             if self.playery > -2 * PLAYER_HEIGHT:
                 self.playerVelY = self.playerFlapAcc
                 self.playerFlapped = True
                 #SOUNDS['wing'].play()
 
-        # check for score
+        # 检查得分
         playerMidPos = self.playerx + PLAYER_WIDTH / 2
         for pipe in self.upperPipes:
             pipeMidPos = pipe['x'] + PIPE_WIDTH / 2
@@ -89,7 +89,7 @@ class GameState:
         self.loopIter = (self.loopIter + 1) % 30
         self.basex = -((-self.basex + 100) % self.baseShift)
 
-        # player's movement
+        # 玩家的移动
         if self.playerVelY < self.playerMaxVelY and not self.playerFlapped:
             self.playerVelY += self.playerAccY
         if self.playerFlapped:
@@ -98,23 +98,23 @@ class GameState:
         if self.playery < 0:
             self.playery = 0
 
-        # move pipes to left
+        # 管道向左移动
         for uPipe, lPipe in zip(self.upperPipes, self.lowerPipes):
             uPipe['x'] += self.pipeVelX
             lPipe['x'] += self.pipeVelX
 
-        # add new pipe when first pipe is about to touch left of screen
+        # 当第一个管道即将触碰屏幕左侧时添加新的管道
         if 0 < self.upperPipes[0]['x'] < 5:
             newPipe = getRandomPipe()
             self.upperPipes.append(newPipe[0])
             self.lowerPipes.append(newPipe[1])
 
-        # remove first pipe if its out of the screen
+        # 如果第一个管道已经超出屏幕，则移除它
         if self.upperPipes[0]['x'] < -PIPE_WIDTH:
             self.upperPipes.pop(0)
             self.lowerPipes.pop(0)
 
-        # check if crash here
+        # 检查是否碰撞
         isCrash= checkCrash({'x': self.playerx, 'y': self.playery,
                              'index': self.playerIndex},
                             self.upperPipes, self.lowerPipes)
@@ -125,7 +125,7 @@ class GameState:
             self.__init__()
             reward = -1
 
-        # draw sprites
+        # 绘制精灵
         SCREEN.blit(IMAGES['background'], (0,0))
 
         for uPipe, lPipe in zip(self.upperPipes, self.lowerPipes):
@@ -133,7 +133,7 @@ class GameState:
             SCREEN.blit(IMAGES['pipe'][1], (lPipe['x'], lPipe['y']))
 
         SCREEN.blit(IMAGES['base'], (self.basex, BASEY))
-        # print score so player overlaps the score
+        # 显示得分
         # showScore(self.score)
         SCREEN.blit(IMAGES['player'][self.playerIndex],
                     (self.playerx, self.playery))
@@ -145,8 +145,8 @@ class GameState:
         return image_data, reward, terminal
 
 def getRandomPipe():
-    """returns a randomly generated pipe"""
-    # y of gap between upper and lower pipe
+    """返回一个随机生成的管道"""
+    # 上下管道之间的间隙的y坐标
     gapYs = [20, 30, 40, 50, 60, 70, 80, 90]
     index = random.randint(0, len(gapYs)-1)
     gapY = gapYs[index]
@@ -155,15 +155,15 @@ def getRandomPipe():
     pipeX = SCREENWIDTH + 10
 
     return [
-        {'x': pipeX, 'y': gapY - PIPE_HEIGHT},  # upper pipe
-        {'x': pipeX, 'y': gapY + PIPEGAPSIZE},  # lower pipe
+        {'x': pipeX, 'y': gapY - PIPE_HEIGHT},  # 上管道
+        {'x': pipeX, 'y': gapY + PIPEGAPSIZE},  # 下管道
     ]
 
 
 def showScore(score):
-    """displays score in center of screen"""
+    """在屏幕中央显示得分"""
     scoreDigits = [int(x) for x in list(str(score))]
-    totalWidth = 0 # total width of all numbers to be printed
+    totalWidth = 0 # 要打印的所有数字的总宽度
 
     for digit in scoreDigits:
         totalWidth += IMAGES['numbers'][digit].get_width()
@@ -176,12 +176,12 @@ def showScore(score):
 
 
 def checkCrash(player, upperPipes, lowerPipes):
-    """returns True if player collders with base or pipes."""
+    """如果玩家与地面或管道碰撞，则返回True"""
     pi = player['index']
     player['w'] = IMAGES['player'][0].get_width()
     player['h'] = IMAGES['player'][0].get_height()
 
-    # if player crashes into ground
+    # 如果玩家撞到地面
     if player['y'] + player['h'] >= BASEY - 1:
         return True
     else:
@@ -190,16 +190,16 @@ def checkCrash(player, upperPipes, lowerPipes):
                       player['w'], player['h'])
 
         for uPipe, lPipe in zip(upperPipes, lowerPipes):
-            # upper and lower pipe rects
+            # 上下管道的矩形
             uPipeRect = pygame.Rect(uPipe['x'], uPipe['y'], PIPE_WIDTH, PIPE_HEIGHT)
             lPipeRect = pygame.Rect(lPipe['x'], lPipe['y'], PIPE_WIDTH, PIPE_HEIGHT)
 
-            # player and upper/lower pipe hitmasks
+            # 玩家和上/下管道的碰撞掩码
             pHitMask = HITMASKS['player'][pi]
             uHitmask = HITMASKS['pipe'][0]
             lHitmask = HITMASKS['pipe'][1]
 
-            # if bird collided with upipe or lpipe
+            # 如果小鸟与上管道或下管道碰撞
             uCollide = pixelCollision(playerRect, uPipeRect, pHitMask, uHitmask)
             lCollide = pixelCollision(playerRect, lPipeRect, pHitMask, lHitmask)
 
@@ -209,7 +209,7 @@ def checkCrash(player, upperPipes, lowerPipes):
     return False
 
 def pixelCollision(rect1, rect2, hitmask1, hitmask2):
-    """Checks if two objects collide and not just their rects"""
+    """检查两个对象是否碰撞，而不仅仅是它们的矩形"""
     rect = rect1.clip(rect2)
 
     if rect.width == 0 or rect.height == 0:
