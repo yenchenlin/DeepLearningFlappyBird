@@ -18,8 +18,8 @@ EXPLORE = 2000000. # frames over which to anneal epsilon
 FINAL_EPSILON = 0.0001 # final value of epsilon
 INITIAL_EPSILON = 0.0001 # starting value of epsilon
 REPLAY_MEMORY = 50000 # number of previous transitions to remember
-BATCH = 32 # size of minibatch
-FRAME_PER_ACTION = 1
+BATCH = 32 # size of minibatchjuygftf
+FRAME_PER_ACTION = 1ugjbhjhj
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev = 0.01)
