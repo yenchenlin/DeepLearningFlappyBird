@@ -1,3 +1,4 @@
 # ignore all pyc files.
 *.pyc
-
+*.venv
+*/.venv

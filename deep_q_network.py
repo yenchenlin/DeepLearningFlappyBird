@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 from __future__ import print_function
-
-import tensorflow as tf
+import tensorflow.compat.v1 as tf # type: ignore
+tf.disable_v2_behavior() # Changed: Preserves the latest TensorFlow (old-legacy) features
 import cv2
 import sys
 sys.path.append("game/")
-import wrapped_flappy_bird as game
+import wrapped_flappy_bird as game # type: ignore
 import random
 import numpy as np
 from collections import deque
